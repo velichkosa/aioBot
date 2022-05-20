@@ -2,6 +2,8 @@ from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
 
+import db_operator as db
+
 
 button_hi = KeyboardButton('Привет! 👋')
 
@@ -57,10 +59,25 @@ markup_big.insert(button6)
 markup_big.insert(KeyboardButton('9️⃣'))
 
 
-inline_btn_1 = InlineKeyboardButton('Первая кнопка!', callback_data='button1')
-inline_kb1 = InlineKeyboardMarkup().add(inline_btn_1)
+btnEmail = InlineKeyboardButton('✉️ На e-mail', callback_data='btnEmail')
+btnCopy = InlineKeyboardButton('Скопировать', callback_data='btnCopy')
+inline_text_kb = InlineKeyboardMarkup().add(btnEmail, btnCopy)
 
-inline_kb_full = InlineKeyboardMarkup(row_width=2).add(inline_btn_1)
+
+def email_keyboard(email_cnt, user_id):
+    group = []
+    keyboard_list = []
+    for el in range(email_cnt):
+        group.append(el)
+        email = db.to_mongo(user_id, el, 'find_email')
+        keyboard_list.append([InlineKeyboardButton(email, callback_data=email)])
+    keyboard_list.append([InlineKeyboardButton('✉️ Добавить e-mail:', callback_data='newemail')])
+    return InlineKeyboardMarkup(inline_keyboard=keyboard_list)
+
+
+
+
+inline_kb_full = InlineKeyboardMarkup(row_width=2).add(btnEmail)
 inline_kb_full.add(InlineKeyboardButton('Вторая кнопка', callback_data='btn2'))
 inline_btn_3 = InlineKeyboardButton('кнопка 3', callback_data='btn3')
 inline_btn_4 = InlineKeyboardButton('кнопка 4', callback_data='btn4')
