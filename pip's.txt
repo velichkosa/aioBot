@@ -5,3 +5,4 @@ pip install pytesseract
 pip install email-to
 pip install -U email-validate
 pip install PyYAML
+pip install pymongo
