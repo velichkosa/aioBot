@@ -22,7 +22,7 @@ def to_mongo(user_id, data, action):
                              {'$addToSet': {'email': data}})
             return
 
-        elif action == 'text_message':
+        elif action == 'image_text':
             return users.find_one({'user_id': user_id})['temp']
         elif action == 'email_len':
             return len(users.find_one({'user_id': user_id})['email'])
