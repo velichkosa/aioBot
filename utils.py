@@ -5,3 +5,4 @@ class States(Helper):
     mode = HelperMode.snake_case
 
     NEW_EMAIL = ListItem()
+    SETTINGS = ListItem()

@@ -32,3 +32,10 @@ def to_mongo(user_id, data, action):
             users.update_one({'user_id': user_id},
                              {'$set': {'temp': data}})
             return
+        elif action == 'current_language':
+            print()
+            return users.find_one({'user_id': user_id})['language']
+        elif action == 'set_language':
+            users.update_one({'user_id': user_id},
+                             {'$set': {'language': data}})
+

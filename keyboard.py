@@ -18,3 +18,12 @@ def email_keyboard(email_cnt, user_id):
         print()
     keyboard_list.append([InlineKeyboardButton('✉️ Добавить e-mail:', callback_data='newemail')])
     return InlineKeyboardMarkup(inline_keyboard=keyboard_list)
+
+
+btnLanguage = InlineKeyboardButton("❓Язык распознавания", callback_data='set_language')
+inline_settings_kb = InlineKeyboardMarkup().add(btnLanguage)
+
+btnRussian = InlineKeyboardButton("🇷🇺 Русский", callback_data='set_lang' + '|' + 'ru' + '|' +  "🇷🇺 Русский")
+btnEnglish = InlineKeyboardButton("🇬🇧 English", callback_data='set_lang' + '|' + 'en' + '|' + '🇬🇧 English')
+btnUkraine = InlineKeyboardButton("🇺🇦 Український", callback_data='set_lang' + '|' + 'uk' + '|' + "🇺🇦 Український")
+inline_lang_kb = InlineKeyboardMarkup().add(btnRussian, btnEnglish, btnUkraine)
