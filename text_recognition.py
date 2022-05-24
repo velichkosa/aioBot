@@ -15,5 +15,5 @@ def recognition(src, image_name, language):
     image = cv2.imread(src + image_name)
 
     speller = YandexSpeller(ignore_urls=True, ignore_digits=True, lang=lang[0])
-    fixed = speller.spelled(pytesseract.image_to_string(image, lang=lang[1] + '+eng'))
+    fixed = speller.spelled(pytesseract.image_to_string(image, lang=lang[1]))
     return fixed

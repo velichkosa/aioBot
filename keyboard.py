@@ -4,8 +4,15 @@ import db_operator as db
 
 
 btnEmail = InlineKeyboardButton('✉️ На e-mail', callback_data='btnEmail')
-btnCopy = InlineKeyboardButton('Скопировать', callback_data='btnCopy')
-inline_text_kb = InlineKeyboardMarkup().add(btnEmail, btnCopy)
+# btnReply = InlineKeyboardButton(f'↩️ Переслать', callback_data='btnReply')
+btnSetLanguage = InlineKeyboardButton(f'⚙️️ Настроить язык', callback_data='process_select_language')
+inline_text_kb = InlineKeyboardMarkup(row_width=1).add(btnEmail, btnSetLanguage)
+
+
+btnRussianProcess = InlineKeyboardButton("🇷🇺 Русский", callback_data='rstlng' + '|' + 'ru' + '|' +  "🇷🇺 Русский")
+btnEnglishProcess = InlineKeyboardButton("🇬🇧 English", callback_data='rstlng' + '|' + 'en' + '|' + '🇬🇧 English')
+# btnUkraineProcess = InlineKeyboardButton("🇺🇦 Український", callback_data='rstlng' + '|' + 'uk' + '|' + "🇺🇦 Український")
+inline_lang_kb_Process = InlineKeyboardMarkup().add(btnRussianProcess, btnEnglishProcess)
 
 
 def email_keyboard(email_cnt, user_id):
@@ -20,7 +27,7 @@ def email_keyboard(email_cnt, user_id):
     return InlineKeyboardMarkup(inline_keyboard=keyboard_list)
 
 
-btnLanguage = InlineKeyboardButton("❓Язык распознавания", callback_data='set_language')
+btnLanguage = InlineKeyboardButton("❓Язык распознавания", callback_data='select_language')
 inline_settings_kb = InlineKeyboardMarkup().add(btnLanguage)
 
 btnRussian = InlineKeyboardButton("🇷🇺 Русский", callback_data='set_lang' + '|' + 'ru' + '|' +  "🇷🇺 Русский")

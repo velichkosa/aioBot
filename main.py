@@ -9,7 +9,8 @@ import text_recognition as textr
 import db_operator as db
 import mail
 from utils import States
-
+import messages
+MESSAGES = messages.MESSAGES
 with open('config.yaml') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 
@@ -20,8 +21,7 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 @dp.message_handler(commands=['start'])
 async def process_start_command(message: types.Message):
     if db.to_mongo(message.from_user.id, None, 'start') > 0:
-        await bot.send_message(message.chat.id, "👋 Успешная авторизация, {0.first_name}!\n\n"
-                                                "⚙️ Нажми Menu или прикрепи изображение для начала работы".
+        await bot.send_message(message.chat.id, MESSAGES['autorisation'].
                                format(message.from_user))
     else:
         insert_data = {
@@ -34,8 +34,7 @@ async def process_start_command(message: types.Message):
             "language": ['ru', '🇷🇺 Русский'],
             "temp": str()}
         db.to_mongo(message.from_user.id, insert_data, 'new_user')
-        await bot.send_message(message.chat.id, text="👋 Успешная регистрация, {0.first_name}!\n\n"
-                                                     "⚙️ Нажми Menu или прикрепи изображение для начала работы".
+        await bot.send_message(message.chat.id, MESSAGES['registration'].
                                format(message.from_user))
 
 
@@ -43,7 +42,7 @@ async def process_start_command(message: types.Message):
 async def text_recognition(message: types.Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
-    delete_message = await bot.send_message(chat_id, text="🕜 {0.first_name}, погоди, я разбираюсь... 🕜".
+    delete_message = await bot.send_message(chat_id, MESSAGES['wait_txtr'].
                                             format(message.from_user))
     src = f'files/{message.chat.id}/'
     language = db.to_mongo(user_id, None, 'current_language')[0]
@@ -64,11 +63,11 @@ async def process_callback_button1(callback_query: types.CallbackQuery):
     await bot.edit_message_reply_markup(chat_id, message_id, reply_markup=None)
     mail_check, mail_cnt = mail.check_exists_email(user_id)
     if not mail_cnt:
-        await bot.send_message(chat_id, text=f'✉️ Введите адрес электронной почты: ')
+        await bot.send_message(chat_id, MESSAGES['input_email'])
         await state.set_state(States.all()[0])
     elif mail_cnt:
         kkb = kb.email_keyboard(mail_cnt, user_id)
-        await bot.send_message(chat_id, text=f'✉️ Выбери e-mail:', reply_markup=kkb)
+        await bot.send_message(chat_id, text=MESSAGES['select_email'], reply_markup=kkb)
 
 
 @dp.callback_query_handler(lambda c: c.data == 'newemail')
@@ -77,7 +76,7 @@ async def inline_callback_newemail(callback_query: types.CallbackQuery):
     chat_id = callback_query.values['message']['chat']['id']
     user_id = callback_query.from_user.id
     await bot.delete_message(chat_id, message_id)
-    await bot.send_message(chat_id, f'✉️ Введите адрес электронной почты: ')
+    await bot.send_message(chat_id, MESSAGES['input_email'])
     state = dp.current_state(user=user_id)
     await state.set_state(States.all()[0])
 
@@ -89,11 +88,11 @@ async def inline_callback_select_email(callback_query: types.CallbackQuery):
     src = f'files/{chat_id}/temp.jpg'
     image_text = db.to_mongo(user_id, None, 'image_text')
     email = callback_query.data.split('|')[1]
-    message_wait = await bot.send_message(chat_id, text=f'⏳...')
+    message_wait = await bot.send_message(chat_id, MESSAGES['waiting'])
     mail.to_email(src, image_text, email, chat_id)
     await bot.delete_message(chat_id, callback_query.message.message_id)
     await bot.delete_message(chat_id, message_wait.message_id)
-    await bot.send_message(chat_id, text=f'👌 Отправлено на {email}')
+    await bot.send_message(chat_id, MESSAGES['send_to_email'] + email)
 
 
 @dp.message_handler(state=States.NEW_EMAIL)
@@ -103,7 +102,7 @@ async def first_test_state_case_met(message: types.Message):
     email = message.text
     src = f'files/{message.chat.id}/temp.jpg'
     state = dp.current_state(user=user_id)
-    message_wait = await bot.send_message(chat_id, text=f'⏳...')
+    message_wait = await bot.send_message(chat_id, MESSAGES['waiting'])
 
     if mail.validate_email(email):
         db.to_mongo(user_id, email, 'add_email')
@@ -112,11 +111,11 @@ async def first_test_state_case_met(message: types.Message):
         await bot.delete_message(chat_id, message_wait.message_id - 2)
         await bot.delete_message(chat_id, message_wait.message_id - 1)
         await bot.delete_message(chat_id, message_wait.message_id)
-        await bot.send_message(chat_id, text=f'👌 Отправлено на {email}')
+        await bot.send_message(chat_id, MESSAGES['send_to_email'] + email)
         await state.reset_state()
     else:
         await bot.delete_message(chat_id, message_wait.message_id)
-        await bot.send_message(chat_id, f' 👺 Не правильный адрес, начинай все заново')
+        await bot.send_message(chat_id, MESSAGES['bad_email'])
         await state.reset_state()
         # sticker = open("files/tea.webp", "rb")
         # bot.send_sticker(chat_id, sticker)
@@ -127,19 +126,44 @@ async def first_test_state_case_met(message: types.Message):
 @dp.message_handler(commands=['settings'])
 async def settings_menu(message: types.Message):
     chat_id = message.chat.id
-    await bot.send_message(chat_id, text=f'⚙️️ Меню настройки бота:', reply_markup=kb.inline_settings_kb)
+    await bot.send_message(chat_id, MESSAGES['bot_settings'], reply_markup=kb.inline_settings_kb)
 
 
-@dp.callback_query_handler(lambda c: c.data == 'set_language')
+@dp.callback_query_handler(lambda c: c.data == 'select_language')
 async def inline_select_language(callback_query: types.CallbackQuery):
-    message_id = callback_query.message.message_id
     chat_id = callback_query.values['message']['chat']['id']
     user_id = callback_query.from_user.id
     current_language = db.to_mongo(user_id, None, 'current_language')[1]
-    await bot.send_message(chat_id, f'Текущий язык: {current_language}\n❓ Выберите основной язык распознования: ',
-                           reply_markup=kb.inline_lang_kb)
+    await bot.send_message(chat_id, MESSAGES['select_language'], reply_markup=kb.inline_lang_kb)
     # state = dp.current_state(user=user_id)
     # await state.set_state(States.all()[0])
+
+
+@dp.callback_query_handler(lambda c: c.data == 'process_select_language')
+async def inline_select_language(callback_query: types.CallbackQuery):
+    message_id = callback_query.message.message_id
+    chat_id = callback_query.values['message']['chat']['id']
+    # user_id = callback_query.from_user.id
+    await bot.edit_message_reply_markup(chat_id, message_id, reply_markup=None)
+    # current_language = db.to_mongo(user_id, None, 'current_language')[1]
+    await bot.send_message(chat_id, MESSAGES['select_language'], reply_markup=kb.inline_lang_kb_Process)
+
+
+@dp.callback_query_handler(lambda c: c.data.split('|')[0] == 'rstlng')
+async def inline_set_language(callback_query: types.CallbackQuery):
+    chat_id = callback_query.values['message']['chat']['id']
+    user_id = callback_query.from_user.id
+    await bot.delete_message(chat_id, callback_query.message.message_id)
+    delete_message = await bot.send_message(chat_id, MESSAGES['wait_txtr'].format(callback_query.from_user))
+    language = [i for i in callback_query.data.split('|')[1:]]
+    db.to_mongo(user_id, language, 'set_language')
+    src = f'files/{chat_id}/'
+    image_text = textr.recognition(src, 'temp.jpg', language[0])
+    db.to_mongo(user_id, image_text, 'update_temp')
+    await bot.delete_message(chat_id, callback_query.message.message_id - 1)
+    await bot.delete_message(chat_id, delete_message.message_id)
+    await bot.send_message(chat_id, f'Текущий язык: {language[1]}')
+    await bot.send_message(chat_id, text=image_text, reply_markup=kb.inline_text_kb)
 
 
 @dp.callback_query_handler(lambda c: c.data.split('|')[0] == 'set_lang')
@@ -148,10 +172,14 @@ async def inline_set_language(callback_query: types.CallbackQuery):
     user_id = callback_query.from_user.id
     language = [i for i in callback_query.data.split('|')[1:]]
     db.to_mongo(user_id, language, 'set_language')
-    await bot.delete_message(chat_id, callback_query.message.message_id-1)
+    await bot.delete_message(chat_id, callback_query.message.message_id - 1)
     await bot.delete_message(chat_id, callback_query.message.message_id)
     await bot.send_message(chat_id, f'Текущий язык: {language[1]}')
-    print()
+
+
+@dp.callback_query_handler(lambda c: c.data == 'btnReply')
+async def inline_reply(callback_query: types.CallbackQuery):
+    await callback_query.message.forward()
 
 
 async def shutdown(dispatcher: Dispatcher):
