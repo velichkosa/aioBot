@@ -1,56 +1,37 @@
-registration_message = ["👋 Успешная регистрация, {0.first_name}!\n\n"
-                        "⚙️ Нажми Menu или прикрепи изображение для начала работы",
-                        "👋 Successful registration, {0.first_name}!\n\n"
-                        "⚙️ Click Menu or attach an image to get started"]
+import gettext
 
-autorisation_message = ["👋 Успешная авторизация, {0.first_name}!\n\n"
-                        "⚙️ Нажми Menu или прикрепи изображение для начала работы",
-                        "👋 Successful autorisation, {0.first_name}!\n\n"
-                        "⚙️ Click Menu or attach an image to get started"]
-
-wait_txtr_message = ["🕜 {0.first_name}, погоди, я разбираюсь... 🕜",
-                     "🕜 {0.first_name}, Sergey, wait, please, I understand...🕜"]
-
-input_email_message = ["✉️ Введите адрес электронной почты: ",
-                       "✉️ Enter your email address: "]
-
-select_email_message = ["✉️ Выбери e-mail: ",
-                        "✉️ Choose email: "]
-
-waiting_message = ["⏳...",
-                   "⏳..."]
-
-send_to_email_message = ["👌 Отправлено на ",
-                         "👌 Sent to"]
-
-bad_email_message = ["👺 Не правильный адрес, начинай все заново",
-                     "👺 Wrong address, start over"]
-
-bot_settings_message = ["⚙️️ Меню настройки бота:",
-                        "⚙️️ Bot settings menu:"]
-
-select_language_message = ["❓ Выберите основной язык распознования: ",
-                           "❓ Select the main recognition language:"]
+transLoc = "/Volumes/Data HD/MyProject/aioBot/i18n/"
+t = gettext.translation('messages', transLoc, languages=['eng'])
+_ = t.gettext
+t.install()
 
 
-def text(mes, lang):
-    LANG_CODE = {
-        'ru': 0,
-        'en': 1
-    }
-    MESSAGES = {
-        'registration': registration_message,
-        'autorisation': autorisation_message,
-        'wait_txtr': wait_txtr_message,
-        'input_email': input_email_message,
-        'select_email': select_email_message,
-        'waiting': waiting_message,
-        'send_to_email': send_to_email_message,
-        'bad_email': bad_email_message,
-        'bot_settings': bot_settings_message,
-        'select_language': select_language_message
-    }
-    return MESSAGES[str(mes)][LANG_CODE[lang[0]]]
+registration_message = _("👋 Успешная регистрация, {0.first_name}!\n\n" \
+                       "⚙️ Нажми Menu или прикрепи изображение для начала работы")
+autorisation_message = _("👋 Успешная авторизация, {0.first_name}!\n\n" \
+                       "⚙️ Нажми Menu или прикрепи изображение для начала работы")
+wait_txtr_message = _("🕜 {0.first_name}, погоди, я разбираюсь... 🕜")
+input_email_message = _("✉️ Введите адрес электронной почты: ")
+select_email_message = _("✉️ Выбери e-mail: ")
+waiting_message = _("⏳...")
+send_to_email_message = _("👌 Отправлено на ")
+bad_email_message = _("👺 Не правильный адрес, начинай все заново")
+bot_settings_message = _("⚙️️ Меню настройки бота:")
+select_language_message = _("❓ Выберите основной язык распознования: ")
+
+MESSAGES ={
+    'registration': registration_message,
+    'autorisation': autorisation_message,
+    'wait_txtr': wait_txtr_message,
+    'input_email': input_email_message,
+    'select_email': select_email_message,
+    'waiting': waiting_message,
+    'send_to_email': send_to_email_message,
+    'bad_email': bad_email_message,
+    'bot_settings': bot_settings_message,
+    'select_language': select_language_message
+}
+
 
 # from utils import States
 #

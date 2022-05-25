@@ -33,12 +33,11 @@ def to_mongo(user_id, data, action):
                              {'$set': {'temp': data}})
             return
         elif action == 'current_language':
+            print()
             return users.find_one({'user_id': user_id})['language']
         elif action == 'set_language':
             users.update_one({'user_id': user_id},
                              {'$set': {'language': data}})
-        elif action == 'interface_language':
-            return users.find_one({'user_id': user_id})['interface_language']
 
 # class Database:
 #     def __init__(self, db_file):

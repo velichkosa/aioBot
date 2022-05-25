@@ -28,8 +28,7 @@ def email_keyboard(email_cnt, user_id):
 
 
 btnLanguage = InlineKeyboardButton("❓Язык распознавания", callback_data='select_language')
-btnInterfaceLanguage = InlineKeyboardButton("❓Язык интерфейса", callback_data='interface_language')
-inline_settings_kb = InlineKeyboardMarkup().add(btnLanguage, btnInterfaceLanguage)
+inline_settings_kb = InlineKeyboardMarkup().add(btnLanguage)
 
 btnRussian = InlineKeyboardButton("🇷🇺 Русский", callback_data='set_lang' + '|' + 'ru' + '|' +  "🇷🇺 Русский")
 btnEnglish = InlineKeyboardButton("🇬🇧 English", callback_data='set_lang' + '|' + 'en' + '|' + '🇬🇧 English')
