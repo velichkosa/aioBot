@@ -8,3 +8,4 @@ pip install PyYAML
 pip install pymongo
 -pip install textblob
 pip install pyaspeller
+pip install python-gettext

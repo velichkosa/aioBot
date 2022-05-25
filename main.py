@@ -9,8 +9,9 @@ import text_recognition as textr
 import db_operator as db
 import mail
 from utils import States
-import messages
-MESSAGES = messages.MESSAGES
+import messages as msg
+
+
 with open('config.yaml') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 
@@ -18,10 +19,12 @@ bot = Bot(token=config['token'])
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
+
 @dp.message_handler(commands=['start'])
 async def process_start_command(message: types.Message):
     if db.to_mongo(message.from_user.id, None, 'start') > 0:
-        await bot.send_message(message.chat.id, MESSAGES['autorisation'].
+        iLang = db.to_mongo(message.from_user.id, None, 'interface_language')
+        await bot.send_message(message.chat.id, msg.text('autorisation', iLang).
                                format(message.from_user))
     else:
         insert_data = {
@@ -32,9 +35,11 @@ async def process_start_command(message: types.Message):
             "full_name": message.from_user.full_name,
             "email": [],
             "language": ['ru', '🇷🇺 Русский'],
+            "interface_language": ['ru', '🇷🇺 Русский'],
             "temp": str()}
         db.to_mongo(message.from_user.id, insert_data, 'new_user')
-        await bot.send_message(message.chat.id, MESSAGES['registration'].
+        iLang = db.to_mongo(message.from_user.id, None, 'interface_language')
+        await bot.send_message(message.chat.id, msg.text('registration', iLang).
                                format(message.from_user))
 
 
@@ -42,7 +47,7 @@ async def process_start_command(message: types.Message):
 async def text_recognition(message: types.Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
-    delete_message = await bot.send_message(chat_id, MESSAGES['wait_txtr'].
+    delete_message = await bot.send_message(chat_id, msg.text('wait_txtr', iLang).
                                             format(message.from_user))
     src = f'files/{message.chat.id}/'
     language = db.to_mongo(user_id, None, 'current_language')[0]
@@ -63,11 +68,11 @@ async def process_callback_button1(callback_query: types.CallbackQuery):
     await bot.edit_message_reply_markup(chat_id, message_id, reply_markup=None)
     mail_check, mail_cnt = mail.check_exists_email(user_id)
     if not mail_cnt:
-        await bot.send_message(chat_id, MESSAGES['input_email'])
+        await bot.send_message(chat_id, msg.text('input_email', iLang))
         await state.set_state(States.all()[0])
     elif mail_cnt:
         kkb = kb.email_keyboard(mail_cnt, user_id)
-        await bot.send_message(chat_id, text=MESSAGES['select_email'], reply_markup=kkb)
+        await bot.send_message(chat_id, text=msg.text('select_email', iLang), reply_markup=kkb)
 
 
 @dp.callback_query_handler(lambda c: c.data == 'newemail')
@@ -76,7 +81,7 @@ async def inline_callback_newemail(callback_query: types.CallbackQuery):
     chat_id = callback_query.values['message']['chat']['id']
     user_id = callback_query.from_user.id
     await bot.delete_message(chat_id, message_id)
-    await bot.send_message(chat_id, MESSAGES['input_email'])
+    await bot.send_message(chat_id, msg.text('input_email', iLang))
     state = dp.current_state(user=user_id)
     await state.set_state(States.all()[0])
 
@@ -88,11 +93,11 @@ async def inline_callback_select_email(callback_query: types.CallbackQuery):
     src = f'files/{chat_id}/temp.jpg'
     image_text = db.to_mongo(user_id, None, 'image_text')
     email = callback_query.data.split('|')[1]
-    message_wait = await bot.send_message(chat_id, MESSAGES['waiting'])
+    message_wait = await bot.send_message(chat_id, msg.text('waiting', iLang))
     mail.to_email(src, image_text, email, chat_id)
     await bot.delete_message(chat_id, callback_query.message.message_id)
     await bot.delete_message(chat_id, message_wait.message_id)
-    await bot.send_message(chat_id, MESSAGES['send_to_email'] + email)
+    await bot.send_message(chat_id, msg.text('send_to_email', iLang) + email)
 
 
 @dp.message_handler(state=States.NEW_EMAIL)
@@ -102,7 +107,7 @@ async def first_test_state_case_met(message: types.Message):
     email = message.text
     src = f'files/{message.chat.id}/temp.jpg'
     state = dp.current_state(user=user_id)
-    message_wait = await bot.send_message(chat_id, MESSAGES['waiting'])
+    message_wait = await bot.send_message(chat_id, msg.text('waiting', iLang))
 
     if mail.validate_email(email):
         db.to_mongo(user_id, email, 'add_email')
@@ -111,11 +116,11 @@ async def first_test_state_case_met(message: types.Message):
         await bot.delete_message(chat_id, message_wait.message_id - 2)
         await bot.delete_message(chat_id, message_wait.message_id - 1)
         await bot.delete_message(chat_id, message_wait.message_id)
-        await bot.send_message(chat_id, MESSAGES['send_to_email'] + email)
+        await bot.send_message(chat_id, msg.text('send_to_email', iLang) + email)
         await state.reset_state()
     else:
         await bot.delete_message(chat_id, message_wait.message_id)
-        await bot.send_message(chat_id, MESSAGES['bad_email'])
+        await bot.send_message(chat_id, msg.text('bad_email', iLang))
         await state.reset_state()
         # sticker = open("files/tea.webp", "rb")
         # bot.send_sticker(chat_id, sticker)
@@ -126,7 +131,7 @@ async def first_test_state_case_met(message: types.Message):
 @dp.message_handler(commands=['settings'])
 async def settings_menu(message: types.Message):
     chat_id = message.chat.id
-    await bot.send_message(chat_id, MESSAGES['bot_settings'], reply_markup=kb.inline_settings_kb)
+    await bot.send_message(chat_id, msg.text('bot_settings', iLang), reply_markup=kb.inline_settings_kb)
 
 
 @dp.callback_query_handler(lambda c: c.data == 'select_language')
@@ -134,7 +139,7 @@ async def inline_select_language(callback_query: types.CallbackQuery):
     chat_id = callback_query.values['message']['chat']['id']
     user_id = callback_query.from_user.id
     current_language = db.to_mongo(user_id, None, 'current_language')[1]
-    await bot.send_message(chat_id, MESSAGES['select_language'], reply_markup=kb.inline_lang_kb)
+    await bot.send_message(chat_id, msg.text('select_language', iLang), reply_markup=kb.inline_lang_kb)
     # state = dp.current_state(user=user_id)
     # await state.set_state(States.all()[0])
 
@@ -146,7 +151,7 @@ async def inline_select_language(callback_query: types.CallbackQuery):
     # user_id = callback_query.from_user.id
     await bot.edit_message_reply_markup(chat_id, message_id, reply_markup=None)
     # current_language = db.to_mongo(user_id, None, 'current_language')[1]
-    await bot.send_message(chat_id, MESSAGES['select_language'], reply_markup=kb.inline_lang_kb_Process)
+    await bot.send_message(chat_id, msg.text('select_language', iLang), reply_markup=kb.inline_lang_kb_Process)
 
 
 @dp.callback_query_handler(lambda c: c.data.split('|')[0] == 'rstlng')
@@ -154,7 +159,7 @@ async def inline_set_language(callback_query: types.CallbackQuery):
     chat_id = callback_query.values['message']['chat']['id']
     user_id = callback_query.from_user.id
     await bot.delete_message(chat_id, callback_query.message.message_id)
-    delete_message = await bot.send_message(chat_id, MESSAGES['wait_txtr'].format(callback_query.from_user))
+    delete_message = await bot.send_message(chat_id, msg.text('wait_txtr', iLang).format(callback_query.from_user))
     language = [i for i in callback_query.data.split('|')[1:]]
     db.to_mongo(user_id, language, 'set_language')
     src = f'files/{chat_id}/'
@@ -176,10 +181,6 @@ async def inline_set_language(callback_query: types.CallbackQuery):
     await bot.delete_message(chat_id, callback_query.message.message_id)
     await bot.send_message(chat_id, f'Текущий язык: {language[1]}')
 
-
-@dp.callback_query_handler(lambda c: c.data == 'btnReply')
-async def inline_reply(callback_query: types.CallbackQuery):
-    await callback_query.message.forward()
 
 
 async def shutdown(dispatcher: Dispatcher):

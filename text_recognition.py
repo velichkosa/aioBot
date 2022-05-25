@@ -3,7 +3,7 @@ import cv2
 from pyaspeller import YandexSpeller
 
 
-# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 
 def recognition(src, image_name, language):
