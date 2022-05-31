@@ -38,6 +38,9 @@ def to_mongo(user_id, data, action):
         elif action == 'set_language':
             users.update_one({'user_id': user_id},
                              {'$set': {'language': data}})
+        elif action == 'set_ilang':
+            users.update_one({'user_id': user_id},
+                             {'$set': {'interface_language': data}})
 
 # class Database:
 #     def __init__(self, db_file):

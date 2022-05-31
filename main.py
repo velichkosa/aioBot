@@ -2,7 +2,7 @@ from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-
+import gettext
 import yaml
 import keyboard as kb
 import text_recognition as textr
@@ -16,6 +16,10 @@ with open('config.yaml') as f:
 
 bot = Bot(token=config['token'])
 dp = Dispatcher(bot, storage=MemoryStorage())
+
+
+transLoc = "/Volumes/Data HD/MyProject/aioBot/i18n/"
+
 
 
 @dp.message_handler(commands=['start'])
@@ -32,6 +36,7 @@ async def process_start_command(message: types.Message):
             "full_name": message.from_user.full_name,
             "email": [],
             "language": ['ru', '🇷🇺 Русский'],
+            "interface_language": ['ru', '🇷🇺 Русский'],
             "temp": str()}
         db.to_mongo(message.from_user.id, insert_data, 'new_user')
         await bot.send_message(message.chat.id, MESSAGES['registration'].
@@ -133,6 +138,7 @@ async def settings_menu(message: types.Message):
 async def inline_select_language(callback_query: types.CallbackQuery):
     chat_id = callback_query.values['message']['chat']['id']
     user_id = callback_query.from_user.id
+    await bot.delete_message(chat_id, callback_query.message.message_id)
     current_language = db.to_mongo(user_id, None, 'current_language')[1]
     await bot.send_message(chat_id, MESSAGES['select_language'], reply_markup=kb.inline_lang_kb)
     # state = dp.current_state(user=user_id)
@@ -162,7 +168,7 @@ async def inline_set_language(callback_query: types.CallbackQuery):
     db.to_mongo(user_id, image_text, 'update_temp')
     await bot.delete_message(chat_id, callback_query.message.message_id - 1)
     await bot.delete_message(chat_id, delete_message.message_id)
-    await bot.send_message(chat_id, f'Текущий язык: {language[1]}')
+    await bot.send_message(chat_id, MESSAGES['current_rec_message'] + language[1])
     await bot.send_message(chat_id, text=image_text, reply_markup=kb.inline_text_kb)
 
 
@@ -172,14 +178,30 @@ async def inline_set_language(callback_query: types.CallbackQuery):
     user_id = callback_query.from_user.id
     language = [i for i in callback_query.data.split('|')[1:]]
     db.to_mongo(user_id, language, 'set_language')
-    await bot.delete_message(chat_id, callback_query.message.message_id - 1)
+    # await bot.delete_message(chat_id, callback_query.message.message_id - 1)
     await bot.delete_message(chat_id, callback_query.message.message_id)
-    await bot.send_message(chat_id, f'Текущий язык: {language[1]}')
+    await bot.send_message(chat_id, MESSAGES['current_rec_message'] + language[1])
 
 
-@dp.callback_query_handler(lambda c: c.data == 'btnReply')
-async def inline_reply(callback_query: types.CallbackQuery):
-    await callback_query.message.forward()
+@dp.callback_query_handler(lambda c: c.data == 'select_interface_language')
+async def select_interface_language(callback_query: types.CallbackQuery):
+    chat_id = callback_query.values['message']['chat']['id']
+    user_id = callback_query.from_user.id
+    await bot.delete_message(chat_id, callback_query.message.message_id)
+    await bot.send_message(chat_id, MESSAGES['select_ilang'], reply_markup=kb.inline_interface_kb)
+
+
+@dp.callback_query_handler(lambda c: c.data.split('|')[0] == 'ilang')
+async def inline_set_language(callback_query: types.CallbackQuery):
+    chat_id = callback_query.values['message']['chat']['id']
+    user_id = callback_query.from_user.id
+    t = gettext.translation('messages', transLoc, languages=[callback_query.data.split('|')[1]])
+    t.install()
+    ilanguage = [i for i in callback_query.data.split('|')[1:]]
+    db.to_mongo(user_id, ilanguage, 'set_ilang')
+    await bot.delete_message(chat_id, callback_query.message.message_id)
+    await bot.send_message(chat_id, MESSAGES['ilang_set']+callback_query.data.split('|')[2])
+    # if callback_query.data.split('|')[1] ==
 
 
 async def shutdown(dispatcher: Dispatcher):

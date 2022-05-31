@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-05-25 22:51+0500\n"
+"POT-Creation-Date: 2022-05-31 20:22+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,53 +15,83 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: messages.py:2
-msgid ""
-"👋 Успешная регистрация, {0.first_name}!\n"
+#: messages.py:10
+msgid "👋 Успешная регистрация, {0.first_name}!\n"
 "\n"
 "⚙️ Нажми Menu или прикрепи изображение для начала работы"
 msgstr  "👋 Successful registration, {0.first_name}!\n"
 "\n"
 "⚙️ Click Menu or attach an image to get started"
 
-#: messages.py:4
-msgid ""
-"👋 Успешная авторизация, {0.first_name}!\n"
+#: messages.py:12
+msgid "👋 Успешная авторизация, {0.first_name}!\n"
 "\n"
 "⚙️ Нажми Menu или прикрепи изображение для начала работы"
 msgstr "👋 Successful autorisation, {0.first_name}!\n"
 "\n"
 "⚙️ Click Menu or attach an image to get started"
 
-#: messages.py:6
+#: messages.py:14
 msgid "🕜 {0.first_name}, погоди, я разбираюсь... 🕜"
 msgstr "🕜 {0.first_name}, Sergey, wait, please, I understand...🕜"
 
-#: messages.py:7
+#: messages.py:15
 msgid "✉️ Введите адрес электронной почты: "
 msgstr "✉️ Enter your email address: "
 
-#: messages.py:8
+#: messages.py:16
 msgid "✉️ Выбери e-mail: "
 msgstr "✉️ Choose email: "
 
-#: messages.py:9
+#: messages.py:17
 msgid "⏳..."
 msgstr "⏳..."
 
-#: messages.py:10
+#: messages.py:18
 msgid "👌 Отправлено на "
 msgstr "👌 Sent to"
 
-#: messages.py:11
+#: messages.py:19
 msgid "👺 Не правильный адрес, начинай все заново"
 msgstr "👺 Wrong address, start over"
 
-#: messages.py:12
+#: messages.py:20
 msgid "⚙️️ Меню настройки бота:"
 msgstr "⚙️️ Bot settings menu:"
 
-#: messages.py:13
+#: messages.py:21
 msgid "❓ Выберите основной язык распознования: "
 msgstr "❓ Select the main recognition language:"
+
+#: messages.py:22
+msgid "Выбери язык бота: "
+msgstr "Select bot language:"
+
+#: messages.py:23
+msgid "Язык интерфейса: "
+msgstr "Current interface language is "
+
+#: messages.py:24
+msgid "Текущий язык распознавания "
+msgstr "Current recognition language is "
+
+#: messages.py:27
+msgid "✉️ На e-mail"
+msgstr "✉️ To e-mail"
+
+#: messages.py:28
+msgid "⚙️️ Настроить язык"
+msgstr "⚙️️ language settings"
+
+#: messages.py:29
+msgid "✉️ Добавить e-mail:"
+msgstr "✉️ Add e-mail:"
+
+#: messages.py:30
+msgid "❓Язык распознавания"
+msgstr "❓Recognition language"
+
+#: messages.py:31
+msgid "❓Язык интерфейса"
+msgstr "❓Interface language"
 

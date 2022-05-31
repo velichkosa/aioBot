@@ -1,14 +1,18 @@
 import gettext
 
+from babel import languages
+
 transLoc = "/Volumes/Data HD/MyProject/aioBot/i18n/"
+
+
 t = gettext.translation('messages', transLoc, languages=['eng'])
 _ = t.gettext
 t.install()
 
 
-registration_message = _("👋 Успешная регистрация, {0.first_name}!\n\n" \
+registration_message = _("👋 Успешная регистрация, {0.first_name}!\n\n"
                        "⚙️ Нажми Menu или прикрепи изображение для начала работы")
-autorisation_message = _("👋 Успешная авторизация, {0.first_name}!\n\n" \
+autorisation_message = _("👋 Успешная авторизация, {0.first_name}!\n\n"
                        "⚙️ Нажми Menu или прикрепи изображение для начала работы")
 wait_txtr_message = _("🕜 {0.first_name}, погоди, я разбираюсь... 🕜")
 input_email_message = _("✉️ Введите адрес электронной почты: ")
@@ -18,6 +22,24 @@ send_to_email_message = _("👌 Отправлено на ")
 bad_email_message = _("👺 Не правильный адрес, начинай все заново")
 bot_settings_message = _("⚙️️ Меню настройки бота:")
 select_language_message = _("❓ Выберите основной язык распознования: ")
+select_ilang_message = _("Выбери язык бота: ")
+ilang_set_message = _("Язык интерфейса: ")
+current_rec_message = _("Текущий язык распознавания ")
+
+
+btn_to_email = _("✉️ На e-mail")
+btn_lang_setting = _("⚙️️ Настроить язык")
+btn_add_email = _("✉️ Добавить e-mail:")
+btn_rec_lang = _("❓Язык распознавания")
+btn_int_lang = _("❓Язык интерфейса")
+
+BTN ={
+    'btn_to_email': btn_to_email,
+    'btn_lang_setting': btn_lang_setting,
+    'btn_add_email': btn_add_email,
+    'btn_rec_lang': btn_rec_lang,
+    'btn_int_lang': btn_int_lang
+}
 
 MESSAGES ={
     'registration': registration_message,
@@ -29,7 +51,10 @@ MESSAGES ={
     'send_to_email': send_to_email_message,
     'bad_email': bad_email_message,
     'bot_settings': bot_settings_message,
-    'select_language': select_language_message
+    'select_language': select_language_message,
+    'select_ilang': select_ilang_message,
+    'ilang_set': ilang_set_message,
+    'current_rec_message': current_rec_message
 }
 
 
