@@ -12,7 +12,7 @@ def to_mongo(user_id, data, action):
             try:
                 result = len(users.find_one({'user_id': user_id}))
                 return result
-            except:
+            except Exception:
                 return 0
         elif action == 'new_user':
             users.insert_one(data)
@@ -41,21 +41,3 @@ def to_mongo(user_id, data, action):
         elif action == 'set_ilang':
             users.update_one({'user_id': user_id},
                              {'$set': {'interface_language': data}})
-
-# class Database:
-#     def __init__(self, db_file):
-#         self.connection = sqlite3.connect(db_file)
-#         self.cursor = self.connection.cursor()
-#
-# # для работы с БД
-# # Добавление нового пользователя
-# # !проверка на пользователя(сделать)
-# def add_user(self, user_id):
-#     with self.connection:
-#        return self.cursor.execute("INSERT INTO `company` (`user_id`) VALUES (?)", (user_id,))
-#
-# # проверка на существование в данный момент
-# def user_exists(self, user_id):
-#     with self.connection:
-#         result = self.cursor.execute("SELECT * FROM `company` WHERE `user_id` = ?", (user_id,)).fetchall()
-#         return bool(len(result))

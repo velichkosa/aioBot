@@ -2,7 +2,7 @@ from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-import gettext
+# import gettext
 import yaml
 import keyboard as kb
 import text_recognition as textr
@@ -10,16 +10,13 @@ import db_operator as db
 import mail
 from utils import States
 import messages
+
 MESSAGES = messages.MESSAGES
 with open('config.yaml') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 
 bot = Bot(token=config['token'])
 dp = Dispatcher(bot, storage=MemoryStorage())
-
-
-transLoc = "/Volumes/Data HD/MyProject/aioBot/i18n/"
-
 
 
 @dp.message_handler(commands=['start'])
@@ -137,9 +134,9 @@ async def settings_menu(message: types.Message):
 @dp.callback_query_handler(lambda c: c.data == 'select_language')
 async def inline_select_language(callback_query: types.CallbackQuery):
     chat_id = callback_query.values['message']['chat']['id']
-    user_id = callback_query.from_user.id
+    # user_id = callback_query.from_user.id
     await bot.delete_message(chat_id, callback_query.message.message_id)
-    current_language = db.to_mongo(user_id, None, 'current_language')[1]
+    # current_language = db.to_mongo(user_id, None, 'current_language')[1]
     await bot.send_message(chat_id, MESSAGES['select_language'], reply_markup=kb.inline_lang_kb)
     # state = dp.current_state(user=user_id)
     # await state.set_state(States.all()[0])
@@ -186,7 +183,7 @@ async def inline_set_language(callback_query: types.CallbackQuery):
 @dp.callback_query_handler(lambda c: c.data == 'select_interface_language')
 async def select_interface_language(callback_query: types.CallbackQuery):
     chat_id = callback_query.values['message']['chat']['id']
-    user_id = callback_query.from_user.id
+    # user_id = callback_query.from_user.id
     await bot.delete_message(chat_id, callback_query.message.message_id)
     await bot.send_message(chat_id, MESSAGES['select_ilang'], reply_markup=kb.inline_interface_kb)
 
@@ -195,13 +192,14 @@ async def select_interface_language(callback_query: types.CallbackQuery):
 async def inline_set_language(callback_query: types.CallbackQuery):
     chat_id = callback_query.values['message']['chat']['id']
     user_id = callback_query.from_user.id
-    t = gettext.translation('messages', transLoc, languages=[callback_query.data.split('|')[1]])
-    t.install()
+    # if (callback_query.data.split('|')[1]) == 'rus':
+    #     messages.trans('rus')
+    # elif (callback_query.data.split('|')[1]) == 'eng':
+    #     messages.trans('eng')
     ilanguage = [i for i in callback_query.data.split('|')[1:]]
     db.to_mongo(user_id, ilanguage, 'set_ilang')
     await bot.delete_message(chat_id, callback_query.message.message_id)
     await bot.send_message(chat_id, MESSAGES['ilang_set']+callback_query.data.split('|')[2])
-    # if callback_query.data.split('|')[1] ==
 
 
 async def shutdown(dispatcher: Dispatcher):
@@ -212,5 +210,3 @@ async def shutdown(dispatcher: Dispatcher):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     executor.start_polling(dp, on_shutdown=shutdown)
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/

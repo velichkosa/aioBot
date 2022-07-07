@@ -8,8 +8,10 @@ from pyaspeller import YandexSpeller
 
 def recognition(src, image_name, language):
     lang = []
-    if language == 'en': lang = ['en', 'eng']
-    elif language == 'ru': lang = ['ru', 'rus']
+    if language == 'en':
+        lang = ['en', 'eng']
+    elif language == 'ru':
+        lang = ['ru', 'rus']
 
     # функция распознавания текста с картинки
     image = cv2.imread(src + image_name)
