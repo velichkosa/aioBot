@@ -37,9 +37,9 @@ def to_email(src, data, to, chat_id):
 
     # setup the parameters of the message
     password = config['email_pwd']
-    msg['From'] = "textrecognition.bot@gmail.com"
+    msg['From'] = "scanbotpro@hotmail.com"
     msg['To'] = to
-    msg['Subject'] = "txtr bot result"
+    msg['Subject'] = "ScanbotPro result"
 
     # add in the message body
     msg.attach(MIMEText(data, 'plain'))
@@ -49,8 +49,11 @@ def to_email(src, data, to, chat_id):
         img = MIMEImage(fp.read())
     msg.attach(img)
     # create server
-    server = smtplib.SMTP(host='smtp.gmail.com', port=587)
+    server = smtplib.SMTP(host='smtp-mail.outlook.com', port=587)
+    # server.starttls()
+    server.ehlo()
     server.starttls()
+    server.ehlo()
     # Login Credentials for sending the mail
     server.login(msg['From'], password)
     # send the message via the server.
